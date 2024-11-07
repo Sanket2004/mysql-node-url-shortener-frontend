@@ -29,7 +29,7 @@ function NavBar() {
                                 <a className="text-gray-500 transition hover:text-gray-500/75" href="#">About</a>
                             </li>
                             <li>
-                                <a className="text-gray-500 transition hover:text-gray-500/75" href="#">Privicy Policy</a>
+                                <a className="text-gray-500 transition hover:text-gray-500/75" href="#">Privacy Policy</a>
                             </li>
                             {/* <li>
                                 <a className="text-gray-500 transition hover:text-gray-500/75" href="#">Careers</a>
@@ -100,7 +100,7 @@ function NavBar() {
                             <a className="text-gray-500 transition hover:text-gray-500/75" href="#">About</a>
                         </li>
                         <li>
-                            <a className="text-gray-500 transition hover:text-gray-500/75" href="#">Privicy Policy</a>
+                            <a className="text-gray-500 transition hover:text-gray-500/75" href="#">Privacy Policy</a>
                         </li>
                         {/* <li>
                             <a className="text-gray-500 transition hover:text-gray-500/75" href="#">Careers</a>
