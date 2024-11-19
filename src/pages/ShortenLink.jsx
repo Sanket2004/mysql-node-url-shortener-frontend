@@ -17,7 +17,15 @@ const ShortenLink = () => {
 
     try {
       const response = await shortenUrl(url, customSlug); // Pass customSlug to the API
-      setMessage(`Shortened URL: ${response.data.shortUrl}`);
+      setMessage(
+        `Shortened URL: ${
+          window.location.protocol +
+          "//" +
+          window.location.host +
+          "/" +
+          response.data.shortUrl
+        }`
+      );
       setUrl("");
       setCustomSlug(""); // Clear the custom slug input
     } catch (error) {
