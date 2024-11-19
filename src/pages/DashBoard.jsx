@@ -231,7 +231,7 @@ function DashBoard() {
                               <a
                                 href={`${window.location.protocol}//${window.location.host}/${link.shortCode}`}
                                 target="_blank"
-                                className="bg-cyan-600 px-2 py-1.5 rounded-md hover:bg-cyan-600/75"
+                                className="bg-cyan-600 w-8 h-8 flex justify-center items-center rounded-md hover:bg-cyan-600/75"
                               >
                                 <LuExternalLink className="text-white text-lg" />
                               </a>
@@ -239,19 +239,19 @@ function DashBoard() {
                                 onClick={() =>
                                   copyToClipBoard({ shortCode: link.shortCode })
                                 }
-                                className="bg-gray-100 text-cyan-600 px-2 py-1.5 rounded-md hover:bg-gray-100/75 text-sm cursor-pointer"
+                                className="bg-gray-100 text-cyan-600 w-8 h-8 flex justify-center items-center rounded-md hover:bg-gray-100/75 text-sm cursor-pointer"
                               >
                                 <LuShare className="text-lg" />
                               </a>
                               <a
                                 onClick={() => openQrModal(link.shortCode)}
-                                className="bg-gray-100 text-green-600 px-2 py-1.5 rounded-md hover:bg-gray-100/75 text-sm cursor-pointer"
+                                className="bg-gray-100 text-green-600 w-8 h-8 flex justify-center items-center rounded-md hover:bg-gray-100/75 text-sm cursor-pointer"
                               >
                                 <LuQrCode className="text-lg"/>
                               </a>
                               <a
                                 onClick={() => handleDelete(link.shortCode)}
-                                className="bg-red-600 text-white px-2 py-1.5 rounded-md hover:bg-red-600/75 text-sm cursor-pointer"
+                                className="bg-red-600 text-white w-8 h-8 flex justify-center items-center rounded-md hover:bg-red-600/75 text-sm cursor-pointer"
                               >
                                 <LuTrash2 className="text-lg" />
                               </a>
