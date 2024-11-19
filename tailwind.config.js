@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily:{
-        sans: ["Figtree, system-ui, sans-serif", ...defaultTheme.fontFamily.sans],
+        sans: ["Poppins, system-ui, sans-serif", ...defaultTheme.fontFamily.sans],
       }
     },
   },
