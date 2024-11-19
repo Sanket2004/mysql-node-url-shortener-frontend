@@ -18,7 +18,7 @@ function NavBar() {
     return (
         <header className="bg-white sticky top-0">
             <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
-                <Link className="block text-sky-600 hover:text-sky-600/75" to="/">
+                <Link className="block text-cyan-600 hover:text-cyan-600/75" to="/">
                     <span className="text-3xl font-bold">Go2</span>
                 </Link>
 
@@ -52,13 +52,13 @@ function NavBar() {
                     <div className="flex items-center gap-4">
                         <div className="sm:flex sm:gap-4">
                             <Link
-                                className="block rounded-md bg-sky-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-sky-700"
+                                className="block rounded-md bg-cyan-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-cyan-700"
                                 to={'/shorten'}
                             >
                                 Shorten Link
                             </Link>
                             <button
-                                className="hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-sky-600 transition hover:text-sky-600/75 sm:block"
+                                className="hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-cyan-600 transition hover:text-cyan-600/75 sm:block"
                                 onClick={handleLogout}
                             >
                                 Logout
@@ -116,7 +116,7 @@ function NavBar() {
                         </li> */}
                         <li>
                             <p
-                                className="font-medium text-sky-600 transition hover:text-sky-600/75 sm:block"
+                                className="font-medium text-cyan-600 transition hover:text-cyan-600/75 sm:block"
                                 onClick={handleLogout}
                             >
                                 Logout

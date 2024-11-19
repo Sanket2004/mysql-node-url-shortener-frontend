@@ -6,8 +6,8 @@ const Footer = () => {
         <footer className="bg-gray-50">
             <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="sm:flex sm:items-center sm:justify-between">
-                    <div className="flex justify-center text-teal-600 sm:justify-start">
-                        <Link className="text-sky-600 flex flex-col items-center lg:items-start justify-center hover:text-sky-600/75" to="/">
+                    <div className="flex justify-center text-cyan-600 sm:justify-start">
+                        <Link className="text-cyan-600 flex flex-col items-center lg:items-start justify-center hover:text-cyan-600/75" to="/">
                             <span className="text-3xl font-bold">Go2</span>
                             <span className="font-normal text-gray-400">URL Shortener
                             </span>

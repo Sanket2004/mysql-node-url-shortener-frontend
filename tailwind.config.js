@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily:{
-        sans: ["Outfit, system-ui, sans-serif", ...defaultTheme.fontFamily.sans],
+        sans: ["ABeeZee, system-ui, sans-serif", ...defaultTheme.fontFamily.sans],
       }
     },
   },

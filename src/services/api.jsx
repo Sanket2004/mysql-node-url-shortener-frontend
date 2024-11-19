@@ -40,11 +40,15 @@ export const registerUser = (userData) => API.post("/auth/register", userData);
 
 
 // URL shortening API requests
-export const shortenUrl = (originalUrl) => API.post("/url/shorten", { originalUrl });
+export const shortenUrl = (originalUrl, customSlug) => API.post("/url/shorten", { originalUrl, customSlug });
 
-export const getOriginalUrl = (shortCode) => API.get(`/url/${shortCode}`);
+// export const getOriginalUrl = (shortCode) => API.get(`/url/${shortCode}`);
 
 export const getAllUrls = () => API.get("/url");
+
+// Example usage to fetch URL details
+export const getOriginalUrlDetails = (shortCode) => API.get(`/url/details/${shortCode}`);
+
 
 export const deleteUrl = (shortCode) => API.delete(`/url/${shortCode}`);
 

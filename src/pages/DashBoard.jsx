@@ -1,32 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { getAllUrls, updateUrlStatus, deleteUrl } from '../services/api';
-import toast from 'react-hot-toast';
-import NavBar from '../components/NavBar';
-import { useUser } from '../context/UserContext';
-import { Bar, Pie, Radar } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-import Footer from '../components/Footer';
+import React, { useEffect, useState } from "react";
+import { getAllUrls, updateUrlStatus, deleteUrl } from "../services/api";
+import toast from "react-hot-toast";
+import NavBar from "../components/NavBar";
+import { useUser } from "../context/UserContext";
+import { Bar, Pie } from "react-chartjs-2";
+import { Chart, registerables } from "chart.js";
+import Footer from "../components/Footer";
+import {
+  LuDelete,
+  LuExternalLink,
+  LuQrCode,
+  LuShare,
+  LuTrash2,
+  LuX,
+} from "react-icons/lu";
+import QRCode from "react-qr-code";
+import Modal from "react-modal";
 
 // Register necessary components
 Chart.register(...registerables);
+
+Modal.setAppElement("#root"); // Set app root element for accessibility
 
 function DashBoard() {
   const { user } = useUser();
   const [shortLinks, setShortLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [qrModalIsOpen, setQrModalIsOpen] = useState(false);
+  const [qrLink, setQrLink] = useState("");
 
   const fetchShortLinks = async () => {
     try {
       const linksResponse = await getAllUrls();
-      setShortLinks(Array.isArray(linksResponse.data) ? linksResponse.data : []);
+      setShortLinks(
+        Array.isArray(linksResponse.data) ? linksResponse.data : []
+      );
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred while fetching data.');
+      setError(
+        err.response?.data?.message || "An error occurred while fetching data."
+      );
     } finally {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchShortLinks();
@@ -46,34 +63,30 @@ function DashBoard() {
           link.shortCode === shortCode ? { ...link, status: newStatus } : link
         )
       );
-      toast.success('Status updated successfully');
+      toast.success("Status updated successfully");
       fetchShortLinks();
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to update status';
+      const errorMessage =
+        err.response?.data?.message || "Failed to update status";
       toast.error(errorMessage);
     }
   };
 
-
   const handleDelete = async (shortCode) => {
     try {
       const response = await deleteUrl(shortCode);
-      // Optionally, handle the response if needed
       console.log(response.data.message); // Log success message
-      // Optionally, refresh the list of URLs or remove the deleted URL from the UI
       fetchShortLinks();
-      // show toast message
-      toast.success('URL deleted successfully');
+      toast.success("URL deleted successfully");
     } catch (error) {
       console.error("Error deleting URL:", error);
-      // Handle the error, e.g., show a notification to the user
-      toast.error("Error deleting URL")
+      toast.error("Error deleting URL");
     }
   };
 
   const copyToClipBoard = async ({ shortCode }) => {
     try {
-      const textToCopy = `${import.meta.env.VITE_API_BASE_URL}/url/${shortCode}`;
+      const textToCopy = `${window.location.protocol}//${window.location.host}/${shortCode}`;
       await navigator.clipboard.writeText(textToCopy);
       toast.success("Link copied to clipboard!");
     } catch (err) {
@@ -82,17 +95,26 @@ function DashBoard() {
     }
   };
 
+  const openQrModal = (shortCode) => {
+    const link = `${window.location.protocol}//${window.location.host}/${shortCode}`;
+    setQrLink(link);
+    setQrModalIsOpen(true);
+  };
 
+  const closeQrModal = () => {
+    setQrModalIsOpen(false);
+    setQrLink("");
+  };
 
   // Prepare data for the Bar chart
   const visitChartData = {
-    labels: shortLinks.map(link => link.shortCode), // Use short codes as labels
+    labels: shortLinks.map((link) => link.shortCode),
     datasets: [
       {
-        label: 'Visit Counts',
-        data: shortLinks.map(link => link.visits), // Use visits as data
-        backgroundColor: '#0285c793', // Color for visit bars
-        borderColor: '#0284c7', // Border color for visit bars
+        label: "Visit Counts",
+        data: shortLinks.map((link) => link.visits),
+        backgroundColor: "#0891b29e",
+        borderColor: "#06b6d4",
         borderWidth: 1,
       },
     ],
@@ -100,29 +122,32 @@ function DashBoard() {
 
   // Prepare data for the Active/Inactive Links chart
   const activeChartData = {
-    labels: shortLinks.map(link => link.shortCode), // Use short codes as labels
+    labels: shortLinks.map((link) => link.shortCode),
     datasets: [
       {
-        label: 'Active Links',
-        data: shortLinks.map(link => link.status === 1 ? 1 : 0), // Count active links (1 for active, 0 for inactive)
-        backgroundColor: '#16a34a89', // Color for active bars (green)
-        borderColor: '#16a34a', // Border color for active bars
+        label: "Active Links",
+        data: shortLinks.map((link) => (link.status === 1 ? 1 : 0)),
+        backgroundColor: "#16a34a89",
+        borderColor: "#16a34a",
         borderWidth: 1,
       },
       {
-        label: 'Inactive Links',
-        data: shortLinks.map(link => link.status !== 1 ? 1 : 0), // Count inactive links (1 for inactive, 0 for active)
-        backgroundColor: '#ef444489', // Color for inactive bars (red)
-        borderColor: '#ef4444', // Border color for inactive bars
+        label: "Inactive Links",
+        data: shortLinks.map((link) => (link.status !== 1 ? 1 : 0)),
+        backgroundColor: "#ef444489",
+        borderColor: "#ef4444",
         borderWidth: 1,
       },
     ],
   };
 
   if (loading) {
-    return <div className='h-screen w-full text-center justify-center flex items-center'>Loading...</div>;
+    return (
+      <div className="h-screen w-full text-center justify-center flex items-center">
+        Loading...
+      </div>
+    );
   }
-
 
   return (
     <>
@@ -140,31 +165,61 @@ function DashBoard() {
             )}
 
             <div className="mt-8">
-              <h3 className="text-xl font-bold mb-2">Shortened Links</h3>
+              <h3 className="text-xl font-semibold mb-2">Shortened Links</h3>
               <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">
                 <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
                   <thead className="ltr:text-left rtl:text-right">
                     <tr>
-                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-start">Short Code</th>
-                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-start">Original URL</th>
-                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-start">Visits</th>
-                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-start">Date</th>
-                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-start">Status</th>
-                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-start">Action</th>
+                      <th className="whitespace-nowrap px-4 py-2 text-gray-900 text-start uppercase font-semibold">
+                        Short URL
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-gray-900 text-start uppercase font-semibold">
+                        Original URL
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-gray-900 text-start uppercase font-semibold">
+                        Visits
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-gray-900 text-start uppercase font-semibold">
+                        Date
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-gray-900 text-start uppercase font-semibold">
+                        Status
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 text-gray-900 text-start uppercase font-semibold">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {shortLinks.length > 0 ? (
                       shortLinks.map((link) => (
                         <tr key={link.shortCode}>
-                          <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{link.shortCode}</td>
-                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">{link.originalUrl}</td>
-                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">{link.visits}</td>
-                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">{new Date(link.createdAt).toLocaleString()}</td>
+                          <td
+                            className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 cursor-pointer"
+                            onClick={() =>
+                              copyToClipBoard({ shortCode: link.shortCode })
+                            }
+                          >
+                            {`${window.location.protocol}//${window.location.host}/${link.shortCode}`}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {link.originalUrl}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {link.visits}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                            {new Date(link.createdAt).toLocaleString()}
+                          </td>
                           <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                             <select
-                              value={link.status != null ? link.status : ''} // Use empty string if status is null/undefined
-                              onChange={(e) => handleStatusChange(link.shortCode, parseInt(e.target.value))}
+                              value={link.status != null ? link.status : ""}
+                              onChange={(e) =>
+                                handleStatusChange(
+                                  link.shortCode,
+                                  parseInt(e.target.value)
+                                )
+                              }
                               className="border border-gray-300 rounded-md px-2 py-1"
                             >
                               <option value={1}>Active</option>
@@ -172,24 +227,53 @@ function DashBoard() {
                             </select>
                           </td>
                           <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                            <div className="space-x-2">
-                              <a href={`${import.meta.env.VITE_API_BASE_URL}/url/${link.shortCode}`} target='_blank' className='bg-sky-600 text-white px-4 py-1.5 rounded-md hover:bg-sky-600/75 text-sm'>Visit</a>
-                              <a onClick={() => copyToClipBoard({ shortCode: link.shortCode })} className='bg-gray-100 text-sky-600 px-4 py-1.5 rounded-md hover:bg-gray-100/75 text-sm cursor-pointer'>Share</a>
-                              <a onClick={() => handleDelete(link.shortCode)} className='bg-red-600 text-white px-4 py-1.5 rounded-md hover:bg-red-600/75 text-sm cursor-pointer'>Delete</a>
+                            <div className="space-x-2 flex">
+                              <a
+                                href={`${window.location.protocol}//${window.location.host}/${link.shortCode}`}
+                                target="_blank"
+                                className="bg-cyan-600 px-2 py-1.5 rounded-md hover:bg-cyan-600/75"
+                              >
+                                <LuExternalLink className="text-white text-lg" />
+                              </a>
+                              <a
+                                onClick={() =>
+                                  copyToClipBoard({ shortCode: link.shortCode })
+                                }
+                                className="bg-gray-100 text-cyan-600 px-2 py-1.5 rounded-md hover:bg-gray-100/75 text-sm cursor-pointer"
+                              >
+                                <LuShare className="text-lg" />
+                              </a>
+                              <a
+                                onClick={() => openQrModal(link.shortCode)}
+                                className="bg-gray-100 text-green-600 px-2 py-1.5 rounded-md hover:bg-gray-100/75 text-sm cursor-pointer"
+                              >
+                                <LuQrCode className="text-lg"/>
+                              </a>
+                              <a
+                                onClick={() => handleDelete(link.shortCode)}
+                                className="bg-red-600 text-white px-2 py-1.5 rounded-md hover:bg-red-600/75 text-sm cursor-pointer"
+                              >
+                                <LuTrash2 className="text-lg" />
+                              </a>
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center py-4 text-gray-500">No links available.</td>
+                        <td
+                          colSpan="6"
+                          className="text-center py-4 text-gray-500"
+                        >
+                          No links available.
+                        </td>
                       </tr>
                     )}
                   </tbody>
                 </table>
               </div>
             </div>
-            {shortLinks.length > 0 ?
+            {shortLinks.length > 0 ? (
               <div className="py-12">
                 <div className="flex flex-wrap gap-10">
                   <div className="w-full lg:w-[65%]">
@@ -198,16 +282,38 @@ function DashBoard() {
                   </div>
                   <div className="w-full lg:w-[30%]">
                     <h3 className="text-xl font-bold mb-2">Active Links</h3>
-                    <Radar data={activeChartData} />
+                    <Pie data={activeChartData} />
                   </div>
                 </div>
               </div>
-              : ''}
-
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>
       <Footer />
+
+      {/* QR Modal */}
+      <Modal
+        isOpen={qrModalIsOpen}
+        onRequestClose={closeQrModal}
+        contentLabel="QR Code Modal"
+        className="w-screen bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-xl font-semibold">Scan the QR Code</h2>
+          <button onClick={closeQrModal} className="">
+            <LuX className="text-xl" />
+          </button>
+        </div>
+        {qrLink && (
+          <div className="flex justify-center mb-4 flex-col items-center gap-3">
+            <QRCode value={qrLink} size={200} className="rounded-xl"/>
+            <p>{qrLink}</p>
+          </div>
+        )}
+      </Modal>
     </>
   );
 }
