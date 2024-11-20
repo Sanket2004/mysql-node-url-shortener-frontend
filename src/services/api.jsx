@@ -25,7 +25,7 @@ API.interceptors.response.use(
         if (error.response && error.response.status === 498) {
             localStorage.removeItem("token"); // Remove the invalid token
             localStorage.removeItem("userEmail");
-            window.location.href = "/login";  // Redirect by reloading the page
+            window.location.href = "/auth/login";  // Redirect by reloading the page
         }
         return Promise.reject(error);
     }

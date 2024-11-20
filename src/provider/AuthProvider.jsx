@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('userEmail')
         setUser(false);
-        navigate('/login');
+        navigate('/auth/login');
     }
 
     const handleAuthError = (error) => {
