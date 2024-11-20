@@ -299,7 +299,7 @@ function DashBoard() {
         isOpen={qrModalIsOpen}
         onRequestClose={closeQrModal}
         contentLabel="QR Code Modal"
-        className="w-screen bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+        className="outline-none w-screen bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
       >
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xl font-semibold">Scan the QR Code</h2>

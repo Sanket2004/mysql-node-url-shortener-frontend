@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily:{
-        sans: ["Figtree, system-ui, sans-serif", ...defaultTheme.fontFamily.sans],
+        sans: ["'Source Sans 3', system-ui, sans-serif", ...defaultTheme.fontFamily.sans],
       }
     },
   },
