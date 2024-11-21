@@ -1,197 +1,263 @@
 import React, { useState } from "react";
 import { useAuth } from "../../provider/AuthProvider";
 import { registerUser } from "../../services/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Circles } from "react-loader-spinner"; // Importing the loader component
+import { LuEye, LuEyeOff } from "react-icons/lu";
+import { FaCheckCircle } from "react-icons/fa";
+import {
+  Button,
+  Input,
+  Option,
+  Select,
+  Typography,
+} from "@material-tailwind/react";
 
 function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [purpose, setPurpose] = useState("Personal");
-  const [loading, setLoading] = useState(false); // New loading state
-  const { login } = useAuth(); // Optional: Log in immediately after registration
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    purpose: "Personal",
+    phone: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+
+  const steps = [
+    {
+      label: "Name",
+      name: "name",
+      type: "text",
+      placeholder: "Enter your name",
+    },
+    {
+      label: "Email",
+      name: "email",
+      type: "email",
+      placeholder: "Enter your email",
+    },
+    {
+      label: "Purpose",
+      name: "purpose",
+      type: "select",
+      options: ["Personal", "Business"],
+    },
+    {
+      label: "Phone",
+      name: "phone",
+      type: "tel",
+      placeholder: "Enter your phone number",
+    },
+    {
+      label: "Password",
+      name: "password",
+      type: "password",
+      placeholder: "Enter your password",
+      isPassword: true,
+    },
+  ];
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleNextStep = () => {
+    if (loading) return; // Prevent next steps during loading
+
+    const currentField = steps[activeStep];
+    const value = formData[currentField.name]?.trim();
+
+    if (!value) {
+      toast.error(`${currentField.label} cannot be empty.`);
+      return;
+    }
+
+    if (currentField.name === "phone" && !/^\d{10}$/.test(value)) {
+      toast.error("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    setActiveStep((prev) => prev + 1);
+  };
+
+  const handlePreviousStep = () => {
+    if (loading) return; // Prevent going back during loading
+    setActiveStep((prev) => (prev > 0 ? prev - 1 : prev));
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-    const userData = { name, email, password, phone, purpose };
-    setLoading(true); // Start the loader
-
+    setLoading(true);
     try {
-      const { data } = await registerUser(userData);
+      const { data } = await registerUser(formData);
       toast.success("Registration successful!");
-
-      // Log in the user after successful registration
-      login(data.token, userData.email);
+      login(data.token, formData.email);
+      navigate("/");
     } catch (error) {
-      console.error("Registration error", error);
-
-      // Extract the error message from the backend response
       const errorMessage =
         error.response?.data?.message ||
         "Failed to register. Please try again.";
       toast.error(errorMessage);
     } finally {
-      setLoading(false); // Stop the loader
+      setLoading(false);
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
-    <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm sticky top-0 bg-[#ffffffe6] pb-4">
-        <h2 className="mt-10 text-center text-3xl/9 font-black tracking-tight text-cyan-600">
-          Go2
-        </h2>
-        <h4 className="text-center mt-2 text-gray-500">URL Shortener</h4>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        {loading ? ( // Show loader when loading
-          <div className="flex justify-center">
-            <Circles
-              height="80"
-              width="80"
-              color="#06b6d4"
-              ariaLabel="loading"
-            />
-          </div>
-        ) : (
-          <form onSubmit={handleRegister} className="space-y-6">
-            <div className="md:flex gap-2 space-y-6 md:space-y-0 w-full">
-              <div className="w-full">
-                <label
-                  htmlFor="name"
-                  className="block text-sm/6 font-semibold text-gray-900"
-                >
-                  Name
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    autoComplete="name"
-                    className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:outline-none focus:ring-inset focus:ring-cyan-600 sm:text-sm/6"
-                  />
-                </div>
-              </div>
-              <div className="w-full">
-                <label
-                  htmlFor="email"
-                  className="block text-sm/6 font-semibold text-gray-900"
-                >
-                  Email address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:outline-none focus:ring-inset focus:ring-cyan-600 sm:text-sm/6"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="md:flex gap-2 space-y-6 md:space-y-0">
-              <div className="flex-1">
-                <label
-                  htmlFor="purpose"
-                  className="block text-sm/6 font-semibold text-gray-900"
-                >
-                  Purpose
-                </label>
-                <div className="mt-2 block w-full rounded-md border-0 text-gray-900 ring-1 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm/6">
-                  <select
-                    id="purpose"
-                    name="purpose"
-                    value={purpose}
-                    required
-                    onChange={(e) => setPurpose(e.target.value)}
-                    className="py-[8px] px-1 w-full block rounded-md border-0 bg-transparent focus:outline-none ring-inset text-gray-500 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm"
-                  >
-                    <option value="Personal">Personal</option>
-                    <option value="Business">Business</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex-1">
-                <label
-                  htmlFor="phone"
-                  className="block text-sm/6 font-semibold text-gray-900"
-                >
-                  Phone number
-                </label>
-                <div className="mt-2 flex">
-                  <div className="w-max rounded-s-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:outline-none focus:ring-inset focus:ring-cyan-600 sm:text-sm/6">
-                    +91
-                  </div>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    maxLength={10}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    autoComplete="phone"
-                    className="block w-full rounded-e-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:outline-none focus:ring-inset focus:ring-cyan-600 sm:text-sm/6"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm/6 font-semibold text-gray-900"
-                >
-                  Password
-                </label>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm/6"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-cyan-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
-              >
-                Sign up
-              </button>
-            </div>
-          </form>
-        )}
-
-        <p className="mt-10 text-center text-sm/6 text-gray-500">
-          Already have an account?{" "}
-          <Link
-            to={"/auth/login"}
-            className="font-semibold text-cyan-600 hover:text-cyan-500"
+    <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="w-full max-w-md p-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Typography variant="h3" className="font-black text-gray-900">
+            Go2
+          </Typography>
+          <Typography
+            variant="paragraph"
+            className="uppercase text-sm font-bold text-gray-500"
           >
-            Sign in
+            URL Shortener
+          </Typography>
+          <Typography variant="small" className="text-gray-600 mt-2">
+            Create your account
+          </Typography>
+        </div>
+
+        {/* Steps */}
+        <div className="flex items-center justify-between mt-6 mb-8">
+          {steps.map((step, index) => (
+            <div key={step.name} className="flex items-center space-x-2">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  activeStep >= index
+                    ? "bg-black text-white"
+                    : "bg-gray-300 text-gray-600"
+                }`}
+              >
+                {activeStep > index ? <FaCheckCircle /> : index + 1}
+              </div>
+              {index < steps.length - 1 && (
+                <div
+                  className={`h-1 w-6 ${
+                    activeStep > index ? "bg-black" : "bg-gray-300"
+                  }`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleRegister} className="space-y-6">
+          {steps.map(
+            (step, index) =>
+              activeStep === index && (
+                <div key={step.name}>
+                  {step.type === "select" ? (
+                    <Select
+                      id={step.name}
+                      name={step.name}
+                      label={step.label}
+                      variant="standard"
+                      value={formData[step.name]}
+                      onChange={handleChange}
+                      required
+                    >
+                      {step.options.map((option) => (
+                        <Option key={option} value={option}>
+                          {option}
+                        </Option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <div className="relative mt-2">
+                      <Input
+                        id={step.name}
+                        name={step.name}
+                        label={step.label}
+                        variant="standard"
+                        type={
+                          step.isPassword
+                            ? showPassword
+                              ? "text"
+                              : "password"
+                            : step.type
+                        }
+                        placeholder={step.placeholder}
+                        value={formData[step.name]}
+                        onChange={handleChange}
+                        required
+                      />
+                      {step.isPassword && (
+                        <button
+                          type="button"
+                          onClick={togglePasswordVisibility}
+                          className="absolute right-3 top-2/4 transform -translate-y-1/2 text-gray-400 hover:text-black focus:outline-none focus:text-black"
+                          aria-label={
+                            showPassword ? "Hide Password" : "Show Password"
+                          }
+                        >
+                          {showPassword ? <LuEyeOff /> : <LuEye />}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+          )}
+
+          {/* Buttons */}
+          <div
+            className={`${
+              activeStep > 0 ? "gap-4" : "gap-0"
+            } flex justify-between items-center`}
+          >
+            {activeStep > 0 && (
+              <Button
+                type="button"
+                onClick={handlePreviousStep}
+                className="w-full rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+                disabled={loading}
+              >
+                Previous
+              </Button>
+            )}
+            {activeStep < steps.length - 1 ? (
+              <Button
+                type="button"
+                onClick={handleNextStep}
+                className="w-full rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+                disabled={loading}
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+                disabled={loading}
+              >
+                {loading ? "Registering..." : "Sign Up"}
+              </Button>
+            )}
+          </div>
+        </form>
+
+        {/* Footer */}
+        <Typography variant="small" className="mt-6 text-center text-gray-600">
+          Already have an account?{" "}
+          <Link to={"/auth/login"} className="text-black hover:underline">
+            Login
           </Link>
-        </p>
+        </Typography>
       </div>
     </div>
   );

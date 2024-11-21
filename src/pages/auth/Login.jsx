@@ -1,119 +1,126 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../provider/AuthProvider";
 import { loginUser } from "../../services/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Circles } from "react-loader-spinner"; // Import the loader
+import { LuEye, LuEyeOff } from "react-icons/lu";
+import { Button, Input, Typography } from "@material-tailwind/react";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start the loader
+    setLoading(true);
+
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data } = await loginUser(email, password);
-      console.log(data);
-
       login(data.token, email);
+      localStorage.setItem("email", email);
       toast.success("Login successful!");
+      navigate("/");
     } catch (error) {
-      console.error("Login error", error);
       toast.error("Invalid credentials");
     } finally {
-      setLoading(false); // Stop the loader
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm sticky top-0 bg-[#ffffffe6] pb-4">
-        <h2 className="mt-10 text-center text-3xl/9 font-black tracking-tight text-cyan-600">
-          Go2
-        </h2>
-        <h4 className="text-center mt-2 text-gray-500">URL Shortener</h4>
-      </div>
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        {loading ? ( // Show the loader when loading
-          <div className="flex justify-center">
-            <Circles
-              height="80"
-              width="80"
-              color="#06b6d4"
-              ariaLabel="loading"
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="w-full max-w-md p-8">
+        <div className="text-center mb-8">
+          <Typography variant="h3" className="font-black text-gray-900">
+            Go2
+          </Typography>
+          <Typography
+            variant="paragraph"
+            className="uppercase text-sm font-bold text-gray-500"
+          >
+            URL Shortener
+          </Typography>
+          <Typography variant="small" className="text-gray-600 mt-2">
+            Login to access your account
+          </Typography>
+        </div>
+        <form onSubmit={handleLogin} className="space-y-6">
+          {/* Email Input */}
+          <div>
+            <Input
+              type="email"
+              variant="standard"
+              label="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+              className="outline-none"
             />
           </div>
-        ) : (
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm/6 font-semibold text-gray-900"
-              >
-                Email address
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:outline-none focus:ring-inset focus:ring-cyan-600 sm:text-sm/6"
-                />
-              </div>
-            </div>
 
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm/6 font-semibold text-gray-900"
-                >
-                  Password
-                </label>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm/6"
-                />
-              </div>
-            </div>
+          {/* Password Input */}
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              label="Password"
+              value={password}
+              variant="standard"
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+              className="outline-none"
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-2/4 transform -translate-y-1/2 text-gray-400 hover:text-black focus:outline-none focus:text-black"
+              aria-label={showPassword ? "Hide Password" : "Show Password"}
+            >
+              {showPassword ? <LuEyeOff size={18} /> : <LuEye size={18} />}
+            </button>
+          </div>
 
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-cyan-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
-              >
-                Sign in
-              </button>
-            </div>
-          </form>
-        )}
-
-        <p className="mt-10 text-center text-sm/6 text-gray-500">
-          Don't have an account?{" "}
-          <Link
-            to={"/auth/register"}
-            className="font-semibold text-cyan-600 hover:text-cyan-500"
+          {/* Login Button */}
+          <Button
+            type="submit"
+            fullWidth
+            color="black"
+            className="mt-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+            disabled={loading}
           >
-            Sign up
+            {loading ? "Logging in..." : "Login"}
+          </Button>
+        </form>
+
+        {/* Footer */}
+        <Typography variant="small" className="mt-6 text-center text-gray-600">
+          Don't have an account?{" "}
+          <Link to="/auth/register" className="text-black hover:underline">
+            Create a now
           </Link>
-        </p>
+        </Typography>
       </div>
     </div>
   );

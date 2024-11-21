@@ -1,26 +1,57 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from "react";
+import { Typography, Button } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
-    return (
-        <footer className="bg-gray-50">
-            <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
-                <div className="sm:flex sm:items-center sm:justify-between">
-                    <div className="flex justify-center text-cyan-600 sm:justify-start">
-                        <Link className="text-cyan-600 flex flex-col items-center lg:items-start justify-center hover:text-cyan-600/75" to="/">
-                            <span className="text-3xl font-bold">Go2</span>
-                            <span className="font-normal text-gray-400">URL Shortener
-                            </span>
-                        </Link>
-                    </div>
+  return (
+    <footer className="bg-white border-t border-gray-200">
+      <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        {/* Left Section */}
+        <div className="flex items-center gap-4">
+          <Link to="/" className="flex items-center flex-col justify-center sm:items-start">
+            <Typography
+              as="span"
+              variant="h3"
+              className="font-black text-black"
+            >
+              Go2
+            </Typography>
+            <Typography variant="small">URL Shortener</Typography>
+          </Link>
+        </div>
 
-                    <p className="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-right">
-                        Copyright &copy; {new Date().getFullYear()}. All rights reserved.
-                    </p>
-                </div>
-            </div>
-        </footer>
-    )
-}
+        {/* Right Section */}
+        <div className="flex gap-2 items-center flex-col justify-center sm:items-end">
+          <div className="flex gap-4">
+            <Link
+              to="/about"
+              className="text-gray-600 hover:text-black transition-all text-sm"
+            >
+              About Us
+            </Link>
+            <Link
+              to="/contact"
+              className="text-gray-600 hover:text-black transition-all text-sm"
+            >
+              Contact Us
+            </Link>
+            <Link
+              to="/privacy-policy"
+              className="text-gray-600 hover:text-black transition-all text-sm"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+          <Typography
+            variant="small"
+            className="text-gray-400 font-normal text-xs"
+          >
+            All rights reserved. Copyright &copy; {new Date().getFullYear()}{" "}
+          </Typography>
+        </div>
+      </div>
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;

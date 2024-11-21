@@ -1,19 +1,13 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
+const withMT = require("@material-tailwind/react/utils/withMT");
 
-/** @type {import('tailwindcss').Config} */
-
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+module.exports = withMT({
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      fontFamily:{
-        sans: ["'Source Sans 3', system-ui, sans-serif", ...defaultTheme.fontFamily.sans],
-      }
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"], // Add 'Inter' as the default sans font
+      },
     },
   },
   plugins: [],
-}
-
+});

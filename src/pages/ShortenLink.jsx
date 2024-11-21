@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import NavBar from "../components/NavBar";
-import { shortenUrl } from "../services/api"; // Import your API function for shortening the URL
 import Footer from "../components/Footer";
+import { shortenUrl } from "../services/api";
+import {
+  Card,
+  CardBody,
+  Typography,
+  Button,
+  Input,
+  Chip,
+  CardHeader,
+} from "@material-tailwind/react";
+import { RiLink } from "react-icons/ri";
 
 const ShortenLink = () => {
   const [url, setUrl] = useState("");
-  const [customSlug, setCustomSlug] = useState(""); // New state for custom slug
+  const [customSlug, setCustomSlug] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
@@ -16,7 +26,7 @@ const ShortenLink = () => {
     }
 
     try {
-      const response = await shortenUrl(url, customSlug); // Pass customSlug to the API
+      const response = await shortenUrl(url, customSlug);
       setMessage(
         `Shortened URL: ${
           window.location.protocol +
@@ -27,7 +37,7 @@ const ShortenLink = () => {
         }`
       );
       setUrl("");
-      setCustomSlug(""); // Clear the custom slug input
+      setCustomSlug("");
     } catch (error) {
       console.error("Error shortening URL:", error);
       setMessage("Failed to shorten the URL. Please try again.");
@@ -37,60 +47,94 @@ const ShortenLink = () => {
   return (
     <>
       <NavBar />
-      <div className="min-h-[80vh] max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <div className="w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-2 text-center text-cyan-500">
-            Shorten Your URL
-          </h2>
-          <p className="text-gray-400 text-center mb-4 uppercase text-sm">
-            Try shorten your long URLs
-          </p>
-          <form onSubmit={handleSubmit} className="bg-white rounded px-8 py-6">
-            <div className="mb-4">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="url"
-              >
-                Enter URL
-              </label>
-              <input
-                type="url"
-                id="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
+      <div className="container mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8">
+        {/* Left Section */}
+        <div className="lg:w-1/2 flex items-start h-full justify-center">
+          <div className="bg-gradient-to-r from-black to-gray-800 p-12 rounded-lg shadow-lg text-white w-full min-h-[300px] lg:min-h-[400px] flex flex-col justify-start">
+            <Typography
+              variant="h2"
+              className="font-black mb-4 text-start tracking-wide"
+            >
+              Supercharge Your URLs
+            </Typography>
+            <Typography variant="small" className="text-gray-300 text-start">
+              Create shortened, trackable, and branded URLs with ease. Enhance
+              your marketing with detailed analytics and custom slugs.
+            </Typography>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <Chip
+                value="Custom Slugs"
+                variant="filled"
+                className="bg-gray-800"
+              />
+              <Chip
+                value="Analytics"
+                variant="filled"
+                className="bg-gray-800"
+              />
+              <Chip
+                value="Free Forever"
+                variant="filled"
+                className="bg-gray-800"
               />
             </div>
-            <div className="mb-4">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="customSlug"
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <div className="lg:w-1/2 flex items-center h-full">
+          <Card className="p-6 w-full min-h-[300px] lg:min-h-[400px] shadow-lg flex flex-col justify-center">
+            <CardHeader className="shadow-none mt-2">
+              <Typography
+                variant="h4"
+                className="font-black text-gray-800 text-start"
               >
-                Custom Slug (optional)
-              </label>
-              <input
-                type="text"
-                id="customSlug"
-                value={customSlug}
-                onChange={(e) => setCustomSlug(e.target.value)}
-                placeholder="custom-slug"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-cyan-600 hover:bg-cyan-600/75 text-white text-sm py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-              >
-                Shorten
-              </button>
-            </div>
-            {message && (
-              <p className="mt-4 text-start text-red-500">{message}</p>
-            )}
-          </form>
+                Shorten Your URL
+              </Typography>
+              <Typography variant="small" className="mb-4">
+                Beautify your long ugly URLs.
+              </Typography>
+            </CardHeader>
+            <CardBody>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-6">
+                  <Input
+                    type="url"
+                    label="Enter URL"
+                    variant="standard"
+                    color="gray"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="https://example.com"
+                    required
+                    icon={<RiLink />}
+                  />
+                </div>
+                <div className="mb-4">
+                  <Input
+                    type="text"
+                    variant="standard"
+                    color="gray"
+                    label="Custom Slug (optional)"
+                    value={customSlug}
+                    onChange={(e) => setCustomSlug(e.target.value)}
+                    placeholder="custom-slug"
+                  />
+                </div>
+                <Button type="submit" size="lg" className="w-full">
+                  Shorten Link
+                </Button>
+              </form>
+              {message && (
+                <Typography
+                  variant="small"
+                  className="mt-4 text-center font-bold"
+                >
+                  {message}
+                </Typography>
+              )}
+            </CardBody>
+          </Card>
         </div>
       </div>
       <Footer />
