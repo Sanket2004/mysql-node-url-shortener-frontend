@@ -24,19 +24,19 @@ const Footer = () => {
         <div className="flex gap-2 items-center flex-col justify-center sm:items-end">
           <div className="flex gap-4">
             <Link
-              to="/about"
+              to="#about"
               className="text-gray-600 hover:text-black transition-all text-sm"
             >
               About Us
             </Link>
             <Link
-              to="/contact"
+              to="#contact"
               className="text-gray-600 hover:text-black transition-all text-sm"
             >
               Contact Us
             </Link>
             <Link
-              to="/privacy-policy"
+              to="#privacy-policy"
               className="text-gray-600 hover:text-black transition-all text-sm"
             >
               Privacy Policy
