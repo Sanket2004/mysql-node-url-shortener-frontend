@@ -296,7 +296,7 @@ function DashBoard() {
                               link.originalUrl
                             )}`}
                             alt="favicon"
-                            className="w-10 h-10"
+                            className="w-10 h-10 p-1 bg-contain"
                           />
                         </div>
                       </td>

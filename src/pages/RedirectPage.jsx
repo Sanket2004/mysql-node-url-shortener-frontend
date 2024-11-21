@@ -18,7 +18,7 @@ const RedirectPage = () => {
 
         if (status === 0) {
           setError("This link is inactive.");
-          setTimeout(() => navigate("/"), 300000); // Redirect after 3 seconds
+          setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
         } else {
           window.location.href = originalUrl;
         }
@@ -27,7 +27,7 @@ const RedirectPage = () => {
           error.response?.data?.message ||
           "Failed to retrieve the link. Redirecting...";
         setError(errorMessage);
-        setTimeout(() => navigate("/"), 300000); // Redirect after 3 seconds
+        setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
       } finally {
         setLoading(false);
       }
