@@ -12,6 +12,7 @@ import {
   CardHeader,
 } from "@material-tailwind/react";
 import { RiLink } from "react-icons/ri";
+import { toast } from "react-hot-toast";
 
 const ShortenLink = () => {
   const [url, setUrl] = useState("");
@@ -27,20 +28,24 @@ const ShortenLink = () => {
 
     try {
       const response = await shortenUrl(url, customSlug);
-      setMessage(
-        `Shortened URL: ${
-          window.location.protocol +
-          "//" +
-          window.location.host +
-          "/" +
-          response.data.shortUrl
-        }`
-      );
+      const backendMessage =
+        response.data.message || "URL shortened successfully!";
+      const shortenedUrl = `${window.location.protocol}//${window.location.host}/${response.data.shortUrl}`;
+      toast.success(backendMessage);
+      setMessage(`Shortened URL: ${shortenedUrl}`);
       setUrl("");
       setCustomSlug("");
     } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setMessage(`Error: ${error.response.data.message}`);
+      } else {
+        setMessage("Failed to shorten the URL. Please try again.");
+      }
       console.error("Error shortening URL:", error);
-      setMessage("Failed to shorten the URL. Please try again.");
     }
   };
 
